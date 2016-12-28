@@ -1,17 +1,17 @@
 package de.programmierenlernenhq.malte.programmierenlernen;
 
+import android.content.Intent;
 import android.os.AsyncTask;
-import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
-
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -20,7 +20,6 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
@@ -29,10 +28,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringReader;
-
 import java.net.HttpURLConnection;
 import java.net.URL;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -119,6 +116,19 @@ public class AktienlisteFragment extends Fragment {
 
         ListView aktienlisteListView = (ListView) rootView.findViewById(R.id.listview_aktienliste);
         aktienlisteListView.setAdapter(mAktienlisteAdapter);
+
+        aktienlisteListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+                String aktienInfo = (String) adapterView.getItemAtPosition(position);
+                //Toast.makeText(getActivity(), aktienInfo, Toast.LENGTH_SHORT).show();
+
+                // Intent erzeugen und Starten der AktiendetailActivity mit explizitem Intent
+                Intent aktiendetailIntent = new Intent(getActivity(), AktiendetailActivity.class);
+                aktiendetailIntent.putExtra(Intent.EXTRA_TEXT, aktienInfo);
+                startActivity(aktiendetailIntent);
+            }
+        });
 
         return rootView;
     }
