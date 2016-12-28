@@ -1,29 +1,38 @@
 package de.programmierenlernenhq.malte.programmierenlernen;
-
 import android.os.AsyncTask;
-import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class AktienlisteFragment extends Fragment{
-    ArrayAdapter<String> mAktienlisteAdapter;
-    //
 
-    public AktienlisteFragment() {
-    }
+public class AktienlisteFragment extends Fragment {
+
+    // Der ArrayAdapter ist jetzt eine Membervariable der Klasse AktienlisteFragment
+    ArrayAdapter<String> mAktienlisteAdapter;
+
+    public AktienlisteFragment() {    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -42,11 +51,6 @@ public class AktienlisteFragment extends Fragment{
         // Wir prüfen, ob Menü-Element mit der ID "action_daten_aktualisieren"
         // ausgewählt wurde und geben eine Meldung aus
         int id = item.getItemId();
-/*        if (id == R.id.action_daten_aktualisieren) {
-            Toast.makeText(getActivity(), "Aktualisieren gedrückt!", Toast.LENGTH_LONG).show();
-
-            return true;
-        }*/
         if (id == R.id.action_daten_aktualisieren) {
 
             // Erzeugen einer Instanz von HoleDatenTask und starten des asynchronen Tasks
@@ -95,19 +99,14 @@ public class AktienlisteFragment extends Fragment{
                         R.id.list_item_aktienliste_textview, // ID des TextViews
                         aktienListe); // Beispieldaten in einer ArrayList
 
+
         View rootView = inflater.inflate(R.layout.fragment_aktienliste, container, false);
 
         ListView aktienlisteListView = (ListView) rootView.findViewById(R.id.listview_aktienliste);
         aktienlisteListView.setAdapter(mAktienlisteAdapter);
 
         return rootView;
-
-        //return inflater.inflate(R.layout.fragment_main, container, false);
-
     }
-
-
-
 
     // Innere Klasse HoleDatenTask führt den asynchronen Task auf eigenem Arbeitsthread aus
     public class HoleDatenTask extends AsyncTask<String, Integer, String[]> {
@@ -117,26 +116,90 @@ public class AktienlisteFragment extends Fragment{
         @Override
         protected String[] doInBackground(String... strings) {
 
-            String[] ergebnisArray = new String[20];
-
-            for (int i=0; i < 20; i++) {
-
-                // Den StringArray füllen wir mit Beispieldaten
-                ergebnisArray[i] = strings[0] + "_" + (i+1);
-
-                // Alle 5 Elemente geben wir den aktuellen Fortschritt bekannt
-                if (i%5 == 4) {
-                    publishProgress(i+1, 20);
-                }
-
-                // Mit Thread.sleep(600) simulieren wir eine Wartezeit von 600 ms
-                try {
-                    Thread.sleep(600);
-                }
-                catch (Exception e) { Log.e(LOG_TAG, "Error ", e); }
+            if (strings.length == 0) { // Keine Eingangsparameter erhalten, daher Abbruch
+                return null;
             }
 
-            return ergebnisArray;
+            // Exakt so muss die Anfrage-URL an die YQL Platform gesendet werden:
+            /*
+            https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20csv%20where%20url
+            %3D'http%3A%2F%2Fdownload.finance.yahoo.com%2Fd%2Fquotes.csv%3Fs%3D
+            BMW.DE%2CDAI.DE%2C%255EGDAXI%26f%3Dsnc4xl1d1t1c1p2ohgv%26e%3D.csv'%20and%20columns%3D'
+            symbol%2Cname%2Ccurrency%2Cexchange%2Cprice%2Cdate%2Ctime%2Cchange%2Cpercent%2C
+            open%2Chigh%2Clow%2Cvolume'&diagnostics=true";
+            */
+
+            // Wir konstruieren die Anfrage-URL für die YQL Platform
+            final String URL_PARAMETER = "https://query.yahooapis.com/v1/public/yql";
+            final String SELECTOR = "select%20*%20from%20csv%20where%20";
+            final String DOWNLOAD_URL = "http://download.finance.yahoo.com/d/quotes.csv";
+            final String DIAGNOSTICS = "'&diagnostics=true";
+
+            String symbols = "BMW.DE,DAI.DE,^GDAXI";
+            symbols = symbols.replace("^", "%255E");
+            String parameters = "snc4xl1d1t1c1p2ohgv";
+            String columns = "symbol,name,currency,exchange,price,date,time," +
+                    "change,percent,open,high,low,volume";
+
+            String anfrageString = URL_PARAMETER;
+            anfrageString += "?q=" + SELECTOR;
+            anfrageString += "url='" + DOWNLOAD_URL;
+            anfrageString += "?s=" + symbols;
+            anfrageString += "%26f=" + parameters;
+            anfrageString += "%26e=.csv'%20and%20columns='" + columns;
+            anfrageString += DIAGNOSTICS;
+
+            Log.v(LOG_TAG, "Zusammengesetzter Anfrage-String: " + anfrageString);
+
+            // Die URL-Verbindung und der BufferedReader, werden im finally-Block geschlossen
+            HttpURLConnection httpURLConnection = null;
+            BufferedReader bufferedReader = null;
+
+            // In diesen String speichern wir die Aktiendaten im XML-Format
+            String aktiendatenXmlString = "";
+
+            try {
+                URL url = new URL(anfrageString);
+
+                // Aufbau der Verbindung zu YQL Platform
+                httpURLConnection = (HttpURLConnection) url.openConnection();
+
+                InputStream inputStream = httpURLConnection.getInputStream();
+
+                if (inputStream == null) { // Keinen Aktiendaten-Stream erhalten, daher Abbruch
+                    return null;
+                }
+                bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+                String line;
+
+                while ((line = bufferedReader.readLine()) != null) {
+                    aktiendatenXmlString += line + "\n";
+                }
+                if (aktiendatenXmlString.length() == 0) { // Keine Aktiendaten ausgelesen, Abbruch
+                    return null;
+                }
+                Log.v(LOG_TAG, "Aktiendaten XML-String: " + aktiendatenXmlString);
+                publishProgress(1,1);
+
+            } catch (IOException e) { // Beim Holen der Daten trat ein Fehler auf, daher Abbruch
+                Log.e(LOG_TAG, "Error ", e);
+                return null;
+            } finally {
+                if (httpURLConnection != null) {
+                    httpURLConnection.disconnect();
+                }
+                if (bufferedReader != null) {
+                    try {
+                        bufferedReader.close();
+                    } catch (final IOException e) {
+                        Log.e(LOG_TAG, "Error closing stream", e);
+                    }
+                }
+            }
+
+            // Hier parsen wir später die XML Aktiendaten
+
+            return null;
         }
 
         @Override
@@ -167,5 +230,4 @@ public class AktienlisteFragment extends Fragment{
                     Toast.LENGTH_SHORT).show();
         }
     }
-
 }
