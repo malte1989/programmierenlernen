@@ -48,6 +48,9 @@ public class AktienlisteFragment extends Fragment {
     ArrayAdapter<String> mAktienlisteAdapter;
     SwipeRefreshLayout mSwipeRefreshLayout;
 
+    // Schlüssel-Konstante für das Speichern und Auslesen der Finanzdaten
+    static final String STATE_DATA = "Finanzdaten";
+
     public AktienlisteFragment() {    }
 
     @Override
@@ -99,6 +102,13 @@ public class AktienlisteFragment extends Fragment {
         };*/
         String [] aktienlisteArray = {};
 
+        if (savedInstanceState != null) {
+            // Wiederherstellen der Werte des gespeicherten Fragment-Zustands
+            aktienlisteArray = savedInstanceState.getStringArray(STATE_DATA);
+
+            Log.v(LOG_TAG, "Zustand des Fragments wieder hergestellt.");
+        }
+
         List<String> aktienListe = new ArrayList<>(Arrays.asList(aktienlisteArray));
 
         mAktienlisteAdapter =
@@ -114,7 +124,7 @@ public class AktienlisteFragment extends Fragment {
         ListView aktienlisteListView = (ListView) rootView.findViewById(R.id.listview_aktienliste);
         aktienlisteListView.setAdapter(mAktienlisteAdapter);
 
-        aktualisiereAktienliste();
+        if (aktienlisteArray.length==0){aktualisiereAktienliste();}
 
         aktienlisteListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -139,6 +149,22 @@ public class AktienlisteFragment extends Fragment {
         });
 
         return rootView;
+    }
+
+    @Override
+    public void onSaveInstanceState (Bundle savedInstanceState) {
+        // Always call the superclass so it can save the view hierarchy state
+        super.onSaveInstanceState(savedInstanceState);
+
+        //Log.v(LOG_TAG, "In Callback-Methode: onSaveInstanceState()");
+
+        int anzahlElemente = mAktienlisteAdapter.getCount();
+        String [] aktienlisteArray = new String[anzahlElemente];
+        for (int i=0; i < anzahlElemente; i++) {
+            aktienlisteArray[i] = mAktienlisteAdapter.getItem(i);
+        }
+
+        savedInstanceState.putStringArray(STATE_DATA, aktienlisteArray);
     }
 
     public void aktualisiereAktienliste(){
