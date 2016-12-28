@@ -7,8 +7,7 @@
     <string name="action_settings">Einstellungen</string>
     <string name="action_daten_aktualisieren">Aktualisieren</string>
     <string name="action_starte_browser">Mehr Infos anzeigen</string>
-
-
+    <string name="action_teile_aktiendaten">Share</string>
 
     <string name="preference_aktienliste_title">Liste der Finanzinstrumente</string>
     <string name="preference_aktienliste_key">aktienliste</string>
