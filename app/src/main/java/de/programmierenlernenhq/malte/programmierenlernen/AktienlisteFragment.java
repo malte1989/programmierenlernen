@@ -20,6 +20,7 @@ import java.util.List;
 
 public class AktienlisteFragment extends Fragment{
     ArrayAdapter<String> mAktienlisteAdapter;
+    //
 
     public AktienlisteFragment() {
     }
