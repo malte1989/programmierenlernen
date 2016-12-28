@@ -1,11 +1,13 @@
 <resources>
     <string name="app_name">ProgrammierenLernen</string>
+    <string name="title_activity_aktiendetail">Aktiendetail</string>
+    <string name="title_activity_einstellungen">Einstellungen</string>
     <string name="hello_world">Hallo</string>
 
     <string name="action_settings">Einstellungen</string>
     <string name="action_daten_aktualisieren">Aktualisieren</string>
-    <string name="title_activity_aktiendetail">Aktiendetail</string>
-    <string name="title_activity_einstellungen">Einstellungen</string>
+    <string name="action_starte_browser">Mehr Infos anzeigen</string>
+
 
 
     <string name="preference_aktienliste_title">Liste der Finanzinstrumente</string>

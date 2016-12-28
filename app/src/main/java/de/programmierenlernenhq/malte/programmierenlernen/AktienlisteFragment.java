@@ -67,41 +67,7 @@ public class AktienlisteFragment extends Fragment {
         // ausgewählt wurde und geben eine Meldung aus
         int id = item.getItemId();
         if (id == R.id.action_daten_aktualisieren) {
-
-/*            // Erzeugen einer Instanz von HoleDatenTask und starten des asynchronen Tasks
-            HoleDatenTask holeDatenTask = new HoleDatenTask();
-            holeDatenTask.execute("Aktie");*/
-
-            // Erzeugen einer Instanz von HoleDatenTask
-            HoleDatenTask holeDatenTask = new HoleDatenTask();
-
-/*            // Variante 1: Auslesen der ausgewählten Aktienliste aus den SharedPreferences
-            SharedPreferences sPrefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
-            String prefAktienlisteKey = getString(R.string.preference_aktienliste_key);
-            String prefAktienlisteDefault = getString(R.string.preference_aktienliste_default);
-            String aktienliste = sPrefs.getString(prefAktienlisteKey,prefAktienlisteDefault);*/
-
-            // Variante 2: Auslesen der ausgewählten Aktienliste aus den SharedPreferences
-            SharedPreferences sPrefs2 = PreferenceManager.getDefaultSharedPreferences(getActivity());
-            Set<String> selections = sPrefs2.getStringSet(getString(R.string.preference_aktienliste_key2), null);
-            String[] selected = selections.toArray(new String[] {});
-            //String str_1 = Joiner.on(",").skipNulls().join(selections);
-            String str_2 = "";
-            for (int i=0; i<selected.length;i++) {
-                if (i==0){
-                    str_2 = selected[i];
-                } else {
-                    str_2 = str_2 + "," + selected[i];
-                }
-            }
-            String aktienliste = str_2;
-
-            // Starten des asynchronen Tasks und Übergabe der Aktienliste
-            holeDatenTask.execute(aktienliste);
-
-            // Den Benutzer informieren, dass neue Aktiendaten im Hintergrund abgefragt werden
-            Toast.makeText(getActivity(), "Aktiendaten werden abgefragt!", Toast.LENGTH_SHORT).show();
-
+            aktualisiereAktienliste();
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -119,7 +85,7 @@ public class AktienlisteFragment extends Fragment {
         Log.w(LOG_TAG, "warning     - Meldung");
         Log.e(LOG_TAG, "error       - Meldung");
 
-        String [] aktienlisteArray = {
+/*        String [] aktienlisteArray = {
                 "Adidas - Kurs: 73,45 €",
                 "Allianz - Kurs: 145,12 €",
                 "BASF - Kurs: 84,27 €",
@@ -129,7 +95,8 @@ public class AktienlisteFragment extends Fragment {
                 "Commerzbank - Kurs: 12,47 €",
                 "Continental - Kurs: 209,94 €",
                 "Daimler - Kurs: 84,33 €"
-        };
+        };*/
+        String [] aktienlisteArray = {};
 
         List<String> aktienListe = new ArrayList<>(Arrays.asList(aktienlisteArray));
 
@@ -159,7 +126,45 @@ public class AktienlisteFragment extends Fragment {
             }
         });
 
+        aktualisiereAktienliste();
+
         return rootView;
+    }
+
+    public void aktualisiereAktienliste(){
+        /*            // Erzeugen einer Instanz von HoleDatenTask und starten des asynchronen Tasks
+            HoleDatenTask holeDatenTask = new HoleDatenTask();
+            holeDatenTask.execute("Aktie");*/
+
+        // Erzeugen einer Instanz von HoleDatenTask
+        HoleDatenTask holeDatenTask = new HoleDatenTask();
+
+/*            // Variante 1: Auslesen der ausgewählten Aktienliste aus den SharedPreferences
+            SharedPreferences sPrefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+            String prefAktienlisteKey = getString(R.string.preference_aktienliste_key);
+            String prefAktienlisteDefault = getString(R.string.preference_aktienliste_default);
+            String aktienliste = sPrefs.getString(prefAktienlisteKey,prefAktienlisteDefault);*/
+
+        // Variante 2: Auslesen der ausgewählten Aktienliste aus den SharedPreferences
+        SharedPreferences sPrefs2 = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        Set<String> selections = sPrefs2.getStringSet(getString(R.string.preference_aktienliste_key2), null);
+        String[] selected = selections.toArray(new String[] {});
+        //String str_1 = Joiner.on(",").skipNulls().join(selections);
+        String str_2 = "";
+        for (int i=0; i<selected.length;i++) {
+            if (i==0){
+                str_2 = selected[i];
+            } else {
+                str_2 = str_2 + "," + selected[i];
+            }
+        }
+        String aktienliste = str_2;
+
+        // Starten des asynchronen Tasks und Übergabe der Aktienliste
+        holeDatenTask.execute(aktienliste);
+
+        // Den Benutzer informieren, dass neue Aktiendaten im Hintergrund abgefragt werden
+        Toast.makeText(getActivity(), "Aktiendaten werden abgefragt!", Toast.LENGTH_SHORT).show();
     }
 
     // Innere Klasse HoleDatenTask führt den asynchronen Task auf eigenem Arbeitsthread aus
