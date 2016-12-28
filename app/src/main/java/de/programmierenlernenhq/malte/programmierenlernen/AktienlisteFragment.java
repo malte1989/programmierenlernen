@@ -1,8 +1,10 @@
 package de.programmierenlernenhq.malte.programmierenlernen;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -33,6 +35,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -65,13 +68,39 @@ public class AktienlisteFragment extends Fragment {
         int id = item.getItemId();
         if (id == R.id.action_daten_aktualisieren) {
 
-            // Erzeugen einer Instanz von HoleDatenTask und starten des asynchronen Tasks
+/*            // Erzeugen einer Instanz von HoleDatenTask und starten des asynchronen Tasks
             HoleDatenTask holeDatenTask = new HoleDatenTask();
-            holeDatenTask.execute("Aktie");
+            holeDatenTask.execute("Aktie");*/
+
+            // Erzeugen einer Instanz von HoleDatenTask
+            HoleDatenTask holeDatenTask = new HoleDatenTask();
+
+/*            // Variante 1: Auslesen der ausgewählten Aktienliste aus den SharedPreferences
+            SharedPreferences sPrefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+            String prefAktienlisteKey = getString(R.string.preference_aktienliste_key);
+            String prefAktienlisteDefault = getString(R.string.preference_aktienliste_default);
+            String aktienliste = sPrefs.getString(prefAktienlisteKey,prefAktienlisteDefault);*/
+
+            // Variante 2: Auslesen der ausgewählten Aktienliste aus den SharedPreferences
+            SharedPreferences sPrefs2 = PreferenceManager.getDefaultSharedPreferences(getActivity());
+            Set<String> selections = sPrefs2.getStringSet(getString(R.string.preference_aktienliste_key2), null);
+            String[] selected = selections.toArray(new String[] {});
+            //String str_1 = Joiner.on(",").skipNulls().join(selections);
+            String str_2 = "";
+            for (int i=0; i<selected.length;i++) {
+                if (i==0){
+                    str_2 = selected[i];
+                } else {
+                    str_2 = str_2 + "," + selected[i];
+                }
+            }
+            String aktienliste = str_2;
+
+            // Starten des asynchronen Tasks und Übergabe der Aktienliste
+            holeDatenTask.execute(aktienliste);
 
             // Den Benutzer informieren, dass neue Aktiendaten im Hintergrund abgefragt werden
-            Toast.makeText(getActivity(), "Aktiendaten werden abgefragt!",
-                    Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity(), "Aktiendaten werden abgefragt!", Toast.LENGTH_SHORT).show();
 
             return true;
         }
@@ -212,7 +241,8 @@ public class AktienlisteFragment extends Fragment {
             final String DOWNLOAD_URL = "http://download.finance.yahoo.com/d/quotes.csv";
             final String DIAGNOSTICS = "'&diagnostics=true";
 
-            String symbols = "BMW.DE,DAI.DE,^GDAXI";
+            //String symbols = "BMW.DE,DAI.DE,^GDAXI";
+            String symbols = strings[0];
             symbols = symbols.replace("^", "%255E");
             String parameters = "snc4xl1d1t1c1p2ohgv";
             String columns = "symbol,name,currency,exchange,price,date,time," +
