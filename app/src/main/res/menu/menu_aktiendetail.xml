@@ -6,6 +6,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".AktiendetailActivity">
 
+    <item android:id="@+id/action_teile_aktiendaten"
+        android:title="@string/action_teile_aktiendaten"
+        app:showAsAction="always"
+        app:actionProviderClass="android.support.v7.widget.ShareActionProvider" />
     <item android:id="@+id/action_starte_browser"
         android:title="@string/action_starte_browser"
         android:orderInCategory="99"
