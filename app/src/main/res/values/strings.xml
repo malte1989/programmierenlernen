@@ -1,9 +1,7 @@
 <resources>
     <string name="app_name">ProgrammierenLernen</string>
     <string name="hello_world">Hallo</string>
-    <string name="title_activity_main2">Main2Activity</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="action_settings">Einstellungen</string>
+    <string name="action_daten_aktualisieren">Aktualisieren</string>
 </resources>
