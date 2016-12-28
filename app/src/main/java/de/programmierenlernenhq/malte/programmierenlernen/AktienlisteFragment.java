@@ -6,6 +6,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -43,9 +44,9 @@ import javax.xml.parsers.ParserConfigurationException;
 
 
 public class AktienlisteFragment extends Fragment {
-
     // Der ArrayAdapter ist jetzt eine Membervariable der Klasse AktienlisteFragment
     ArrayAdapter<String> mAktienlisteAdapter;
+    SwipeRefreshLayout mSwipeRefreshLayout;
 
     public AktienlisteFragment() {    }
 
@@ -113,6 +114,8 @@ public class AktienlisteFragment extends Fragment {
         ListView aktienlisteListView = (ListView) rootView.findViewById(R.id.listview_aktienliste);
         aktienlisteListView.setAdapter(mAktienlisteAdapter);
 
+        aktualisiereAktienliste();
+
         aktienlisteListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
@@ -126,7 +129,14 @@ public class AktienlisteFragment extends Fragment {
             }
         });
 
-        aktualisiereAktienliste();
+        mSwipeRefreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.swipe_refresh_layout_aktienliste);
+
+        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                aktualisiereAktienliste();
+            }
+        });
 
         return rootView;
     }
@@ -336,6 +346,8 @@ public class AktienlisteFragment extends Fragment {
                     mAktienlisteAdapter.add(aktienString);
                 }
             }
+
+            mSwipeRefreshLayout.setRefreshing(false);
 
             // Hintergrundberechnungen sind jetzt beendet, darüber informieren wir den Benutzer
             Toast.makeText(getActivity(), "Aktiendaten vollständig geladen!",
