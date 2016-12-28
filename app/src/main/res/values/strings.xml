@@ -5,4 +5,24 @@
     <string name="action_settings">Einstellungen</string>
     <string name="action_daten_aktualisieren">Aktualisieren</string>
     <string name="title_activity_aktiendetail">Aktiendetail</string>
+    <string name="title_activity_einstellungen">Einstellungen</string>
+
+
+    <string name="preference_aktienliste_title">Liste der Finanzinstrumente</string>
+    <string name="preference_aktienliste_key">aktienliste</string>
+    <string name="preference_aktienliste_default">BMW.DE,DAI.DE,VOW3.DE,SAP.DE,^GDAXI</string>
+
+    <string name="preference_aktienliste_dialog_title">Liste der Finanzinstrumente</string>
+    <string name="preference_aktienliste_title2">Liste der Finanzinstrumente</string>
+    <string name="preference_aktienliste_key2">aktienliste2</string>
+    <string-array name="preference_aktienliste_default2">
+        <item>BMW.DE</item>
+        <item>DAI.DE</item>
+        <item>VOW3.DE</item>
+        <item>SAP.DE</item>
+        <item>^GDAXI</item>
+    </string-array>
+
+
+
 </resources>

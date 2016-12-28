@@ -3,6 +3,8 @@ package de.programmierenlernenhq.malte.programmierenlernen;
 /**
  * Created by deb559M on 28.12.2016.
  */
+
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
@@ -32,7 +34,7 @@ public class AktiendetailActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         if (id == R.id.action_settings) {
-
+            startActivity(new Intent(this, EinstellungenActivity.class));
             return true;
         }
 
